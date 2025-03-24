@@ -1,11 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import LocationViewSet
+from django.urls import path
+from . import views
 
-router = DefaultRouter()
-router.register(r'locations', LocationViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('locations/', views.LocationListCreateView.as_view(), name='list-create'),
+    path('locations/<int:pk>/', views.LocationRetrieveUpdateDestroyView.as_view(), name='retrieve-update-delete'),
 ]
-

@@ -15,9 +15,7 @@ class LocationSerializer(serializers.ModelSerializer):
             'created_at'
         ]
 
-class LocationShortSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField()
+
 
     def validate_name(self, value):
         if not value.strip():

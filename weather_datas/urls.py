@@ -1,11 +1,9 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import WeatherDataViewSet
+from django.urls import path
+from . import views
 
-router = DefaultRouter()
-router.register(r'weather-data', WeatherDataViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('weather-data/', views.WeatherDataListCreateView.as_view(), name='list-create'),
+    path('weather-data/<int:pk>/', views.WeatherDataRetrieveUpdateDestroyView.as_view(), name='retrieve-update-delete'),
+    path('weather-data/location/<int:pk>/', views.WeatherDataByLocationView.as_view(), name='weather-data-by-location')
 ]
-

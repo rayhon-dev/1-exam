@@ -1,19 +1,24 @@
-from rest_framework import viewsets
+from rest_framework import generics
+from .serializers import ForecastSerializer, ForecastByLocationSerializer
+from .pagination import ForecastPagination, ForecastByLocationPagination
 from .models import Forecast
-from .serializers import ForecastSerializer
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 
+class ForecastListCreateView(generics.ListCreateAPIView):
+    queryset = Forecast.objects.all()
+    serializer_class = ForecastSerializer
+    pagination_class = ForecastPagination
 
-class ForecastViewSet(viewsets.ModelViewSet):
+
+class ForecastRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Forecast.objects.all()
     serializer_class = ForecastSerializer
 
-    @action(detail=False, methods=['get'], url_path='location/(?P<location_id>\d+)')
-    def location(self, request, location_id=None):
-        # /api/weather-data/location/{pk}/
-        forecast = Forecast.objects.filter(location_id=location_id)
-        serializer = self.get_serializer(forecast, many=True)
-        return Response(serializer.data)
 
+class ForecastByLocationView(generics.ListAPIView):
+    queryset = Forecast.objects.all()
+    serializer_class = ForecastByLocationSerializer
+    pagination_class = ForecastByLocationPagination
+
+    def get_queryset(self):
+       return super().get_queryset().filter(location__id=self.kwargs['pk'])

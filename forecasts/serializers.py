@@ -1,13 +1,11 @@
 from rest_framework import serializers
 from .models import Forecast
-from .validators import validate_forecast_date, validate_temperature_range
-from locations.models import Location
 
+class ForecastLocation(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
 
 class ForecastSerializer(serializers.ModelSerializer):
-    location = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all())
-    forecast_date = serializers.DateField(validators=[validate_forecast_date])
-
     class Meta:
         model = Forecast
         fields = [
@@ -23,6 +21,19 @@ class ForecastSerializer(serializers.ModelSerializer):
             'created_at'
         ]
 
-    def validate(self, data):
-        validate_temperature_range(data.get('temperature_min'), data.get('temperature_max'))
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['location'] = ForecastLocation(instance.location).data
         return data
+
+class ForecastByLocationSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    forecast_date = serializers.DateField(read_only=True)
+    temperature_min = serializers.FloatField(read_only=True)
+    temperature_max = serializers.FloatField(read_only=True)
+    humidity = serializers.FloatField(read_only=True)
+    precipitation_probability = serializers.FloatField(read_only=True)
+    wind_speed = serializers.FloatField(read_only=True)
+    wind_direction = serializers.FloatField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
